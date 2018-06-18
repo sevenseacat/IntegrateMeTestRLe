@@ -1,5 +1,7 @@
 # Thought Processes and Other Considerations
 
+## Mailchimp integration
+
 * To minimize performance impact for users, accessing the external API should be done outside the main controller process, ie. in a background job. I've added a basic Sidekiq setup for this purpose.
 
 * I've decided that Mailchimp integration with competition management is out of the scope of this task. In the real app, when managing a competition, there could be several possibilities:
@@ -15,3 +17,7 @@ Either way, the ID of that mailing list will be stored with the Competition reco
 
 * Possible optimizations include:
   * Batching subscriptions into groups of a certain size or time range, to save hitting the API too many times
+
+## Competition management
+
+* In a real app, there would be authentication locking access to the admin namespace. Typically I would do this by placing a `before_action` method in the `Admin::ApplicationController` that applies to every action, and checks for an authenticated user.

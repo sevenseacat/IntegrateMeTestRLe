@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   get ':competition_id/:permalink' => 'competitions#entrant_page', constraints: {competition_id: /\d+/}
   post 'entries' => 'entries#create'
 
+  namespace :admin do
+    root 'dashboard#show'
+  end
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
