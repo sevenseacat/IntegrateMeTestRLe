@@ -1,9 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Lato');
 
-$family-sans-serif: "Lato";
+$family-sans-serif: "Lato", sans-serif;
 $text-light: #a5afb8;
+$turquoise: #4edd9e;
+$menu-item-active-background-color: $turquoise;
+$link: $text-light;
+$table-cell-padding: 1em;
 
 @import "bulma";
+@import "table";
 
 html {
   height: 100%;
@@ -42,10 +47,10 @@ div.header {
 
 aside {
   padding-top: 30px;
-}
 
-p.menu-label {
-  padding: 0 12px;
+  p.menu-label {
+    padding: 0 12px;
+  }
 }
 
 main#content {

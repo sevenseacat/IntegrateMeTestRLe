@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root 'dashboard#show'
+
+    resources :competitions, only: [:index, :edit]
   end
 
   # Example of regular route:
