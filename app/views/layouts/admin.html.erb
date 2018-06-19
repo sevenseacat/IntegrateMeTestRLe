@@ -2,11 +2,39 @@
 <html>
 <head>
   <title>Admin // IntegrateMe</title>
-  <%= stylesheet_link_tag    'application', media: 'all' %>
+  <%= stylesheet_link_tag    'admin', media: 'all' %>
   <%= javascript_include_tag 'application' %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <%= yield %>
+  <div class="header">
+    <div class="container">
+      <%= link_to image_tag("logo.svg"), admin_root_path %>
+    </div>
+  </div>
+  <div class="container">
+    <div class="columns">
+      <div class="column is-one-quarter sidebar">
+        <aside class="menu">
+          <p class="menu-label">Apps</p>
+          <ul class="menu-list">
+            <li><a>Competitions</a></li>
+          </ul>
+          <p class="menu-label">
+            Administration
+          </p>
+          <ul class="menu-list">
+            <li><a>Your Account</a></li>
+            <li><a>Sign Out</a></li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column">
+        <main id="content">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

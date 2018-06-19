@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+$family-sans-serif: "Lato";
+$text-light: #a5afb8;
+
+@import "bulma";
+
+html {
+  height: 100%;
+}
+
+body {
+  background-color: $white-bis;
+  min-height: 100%;
+}
+
+h1 {
+  font-size: 38px;
+  line-height: 1.33;
+  letter-spacing: .7px;
+  margin-bottom: 10px;
+}
+
+p.placeholder {
+  font-size: 16px;
+  line-height: 1.62;
+  color: $text-light;
+  letter-spacing: .5px;
+  margin: 0px;
+}
+
+div.header {
+  background-image: linear-gradient(290deg, #55df98, #455b97);
+  padding: 10px 0px 5px;
+  margin-bottom: 20px;
+}
+
+aside {
+  padding-top: 30px;
+}
+
+p.menu-label {
+  padding: 0 12px;
+}
+
+main#content {
+  border: 1px solid $white-ter;
+  border-radius: 5px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 2px 4px 0 hsla(0, 0%, 0%, 0.1);
+}
