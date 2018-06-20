@@ -15,15 +15,19 @@ decodeCompetitionResponse =
 encodeCompetition : Competition -> Encode.Value
 encodeCompetition c =
     Encode.object
-        [ ( "name", Encode.string c.name )
-        , ( "requiresEntryName", Encode.bool c.requiresEntryName )
-        , ( "mailingListId"
-          , case c.mailingListId of
-                Just v ->
-                    Encode.string v
+        [ ( "competition"
+          , Encode.object
+                [ ( "name", Encode.string c.name )
+                , ( "requiresEntryName", Encode.bool c.requiresEntryName )
+                , ( "mailingListId"
+                  , case c.mailingListId of
+                        Just v ->
+                            Encode.string v
 
-                Nothing ->
-                    Encode.null
+                        Nothing ->
+                            Encode.null
+                  )
+                ]
           )
         ]
 

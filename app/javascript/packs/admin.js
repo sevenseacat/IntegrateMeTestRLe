@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(mountNode) {
     var competitionData = mountNode.getAttribute("data-competitions");
     var listData = mountNode.getAttribute("data-mailing-lists");
-    var app = Elm.Admin.Main.embed(mountNode, {competitions: competitionData, mailingLists: listData});
+    var token = document.querySelector("meta[name='csrf-token']").getAttribute('content');
+    var app = Elm.Admin.Main.embed(mountNode, {competitions: competitionData, mailingLists: listData, csrfToken: token});
   }
 })

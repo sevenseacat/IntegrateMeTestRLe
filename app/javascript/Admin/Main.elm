@@ -5,6 +5,7 @@ import Admin.Messages exposing (..)
 import Admin.Pages.Competitions
 import Admin.Pages.Competition
 import Admin.Pages.NotFound
+import Admin.Request exposing (competitionSaveRequest)
 import Admin.Routing as Routing exposing (Route(..), competitionPath)
 import Admin.Types exposing (Competition, MailingList, Errors)
 import Dict exposing (Dict)
@@ -16,6 +17,7 @@ import Navigation exposing (Location)
 type alias Flags =
     { competitions : String
     , mailingLists : String
+    , csrfToken : String
     }
 
 
@@ -25,11 +27,12 @@ type alias Model =
     , route : Route
     , currentCompetition : Maybe Competition
     , errors : Errors
+    , csrfToken : String
     }
 
 
 init : Flags -> Location -> ( Model, Cmd Msg )
-init { competitions, mailingLists } location =
+init { competitions, mailingLists, csrfToken } location =
     let
         currentRoute =
             Routing.parseLocation location
@@ -58,6 +61,7 @@ init { competitions, mailingLists } location =
           , route = currentRoute
           , currentCompetition = currentCompetition
           , errors = Dict.empty
+          , csrfToken = csrfToken
           }
         , Cmd.none
         )
@@ -118,7 +122,7 @@ update msg model =
         SaveCompetition ->
             case model.currentCompetition of
                 Just c ->
-                    ( model, submitCompetitionData c )
+                    ( model, submitCompetitionData model.csrfToken c )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -130,15 +134,15 @@ update msg model =
             ( model, Cmd.none )
 
 
-submitCompetitionData : Competition -> Cmd Msg
-submitCompetitionData competition =
+submitCompetitionData : String -> Competition -> Cmd Msg
+submitCompetitionData token competition =
     let
         body =
             competition
                 |> DataLoader.encodeCompetition
                 |> Http.jsonBody
     in
-        Http.post (competitionPath competition.id) body DataLoader.decodeCompetitionResponse
+        competitionSaveRequest token (competitionPath competition.id) body
             |> Http.send CompetitionSaved
 
 

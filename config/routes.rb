@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root 'dashboard#show'
 
+    put 'competitions/:id' => 'competitions#update', constraints: {competition_id: /\d+/}
     get 'competitions' => 'competitions#app'
     get 'competitions/:anything' => 'competitions#app'
   end
