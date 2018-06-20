@@ -21,6 +21,7 @@ type alias Model =
     { competitions : List Competition
     , mailingLists : List MailingList
     , route : Route
+    , currentCompetition : Maybe Competition
     }
 
 
@@ -38,6 +39,9 @@ init { competitions, mailingLists } location =
                 Err _ ->
                     []
 
+        currentCompetition =
+            loadCurrentCompetition comps currentRoute
+
         lists =
             case DataLoader.loadMailingLists mailingLists of
                 Ok data ->
@@ -46,7 +50,13 @@ init { competitions, mailingLists } location =
                 Err _ ->
                     []
     in
-        ( { competitions = comps, mailingLists = lists, route = currentRoute }, Cmd.none )
+        ( { competitions = comps
+          , mailingLists = lists
+          , route = currentRoute
+          , currentCompetition = currentCompetition
+          }
+        , Cmd.none
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,8 +69,62 @@ update msg model =
             let
                 newRoute =
                     Routing.parseLocation location
+
+                currentCompetition =
+                    loadCurrentCompetition model.competitions newRoute
             in
-                ( { model | route = newRoute }, Cmd.none )
+                ( { model | route = newRoute, currentCompetition = currentCompetition }, Cmd.none )
+
+        UpdateName name ->
+            let
+                newCompetition =
+                    case model.currentCompetition of
+                        Just competition ->
+                            Just { competition | name = name }
+
+                        Nothing ->
+                            Nothing
+            in
+                ( { model | currentCompetition = newCompetition }, Cmd.none )
+
+        UpdateMailingListId id ->
+            let
+                newCompetition =
+                    case model.currentCompetition of
+                        Just competition ->
+                            Just { competition | mailingListId = Just id }
+
+                        Nothing ->
+                            Nothing
+            in
+                ( { model | currentCompetition = newCompetition }, Cmd.none )
+
+        UpdateRequireEntryName val ->
+            let
+                newCompetition =
+                    case model.currentCompetition of
+                        Just competition ->
+                            Just { competition | requiresEntryName = val }
+
+                        Nothing ->
+                            Nothing
+            in
+                ( { model | currentCompetition = newCompetition }, Cmd.none )
+
+
+loadCurrentCompetition : List Competition -> Route -> Maybe Competition
+loadCurrentCompetition competitions route =
+    case route of
+        CompetitionRoute id ->
+            findCompetition competitions id
+
+        _ ->
+            Nothing
+
+
+findCompetition : List Competition -> Int -> Maybe Competition
+findCompetition list id =
+    List.head (List.filter (\c -> c.id == id) list)
 
 
 view : Model -> Html Msg
@@ -70,7 +134,7 @@ view model =
             Admin.Pages.Competitions.view model.competitions
 
         CompetitionRoute id ->
-            case List.head (List.filter (\c -> c.id == id) model.competitions) of
+            case model.currentCompetition of
                 Just c ->
                     Admin.Pages.Competition.view c model.mailingLists
 

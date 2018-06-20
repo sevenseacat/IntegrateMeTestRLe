@@ -5,6 +5,7 @@ import Admin.Routing exposing (linkTo, competitionsPath)
 import Admin.Types exposing (Competition, MailingList)
 import Html exposing (Html, div, text, label, input, button, select, option)
 import Html.Attributes exposing (type_, value, class, for, name, checked)
+import Html.Events exposing (onInput, onCheck)
 
 
 labelField : String -> String -> Html msg
@@ -15,25 +16,25 @@ labelField forValue textValue =
         ]
 
 
-textField : String -> String -> Html msg
-textField nameValue textValue =
+textField : String -> String -> (String -> Msg) -> Html Msg
+textField nameValue textValue msg =
     div [ class "field-body" ]
         [ div [ class "control" ]
             [ input
-                [ type_ "text", name nameValue, class "input", value textValue ]
+                [ type_ "text", name nameValue, class "input", value textValue, onInput msg ]
                 []
             ]
         ]
 
 
-checkboxField : String -> Bool -> String -> Html msg
-checkboxField nameValue checkedValue labelValue =
+checkboxField : String -> Bool -> String -> (Bool -> Msg) -> Html Msg
+checkboxField nameValue checkedValue labelValue msg =
     div [ class "field-body" ]
         [ div [ class "field" ]
             [ div [ class "control" ]
                 [ label [ class "checkbox" ]
                     [ input
-                        [ type_ "checkbox", name nameValue, checked checkedValue ]
+                        [ type_ "checkbox", name nameValue, checked checkedValue, onCheck msg ]
                         []
                     , text labelValue
                     ]
@@ -42,13 +43,13 @@ checkboxField nameValue checkedValue labelValue =
         ]
 
 
-selectField : String -> List { a | id : String, name : String } -> Html msg
-selectField nameValue data =
+selectField : String -> List { a | id : String, name : String } -> (String -> Msg) -> Html Msg
+selectField nameValue data msg =
     div [ class "field-body" ]
         [ div [ class "field is-narrow" ]
             [ div [ class "control" ]
                 [ div [ class "select is-fullwidth" ]
-                    [ select [ name nameValue ] (List.map optionField data)
+                    [ select [ name nameValue, onInput msg ] (List.map optionField data)
                     ]
                 ]
             ]
@@ -65,15 +66,15 @@ view competition mailingLists =
     div []
         [ div [ class "field is-horizontal" ]
             [ labelField "name" "Name"
-            , textField "name" competition.name
+            , textField "name" competition.name UpdateName
             ]
         , div [ class "field is-horizontal" ]
             [ labelField "mailing_list_id" "Mailing List"
-            , selectField "mailing_list_id" mailingLists
+            , selectField "mailing_list_id" mailingLists UpdateMailingListId
             ]
         , div [ class "field is-horizontal" ]
             [ div [ class "field-label" ] []
-            , checkboxField "requires_entry_name" competition.requiresEntryName "This competition requires an entry name"
+            , checkboxField "requires_entry_name" competition.requiresEntryName "This competition requires an entry name" UpdateRequireEntryName
             ]
         , div [ class "field is-horizontal is-grouped" ]
             [ div [ class "field-label" ] []

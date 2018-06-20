@@ -6,3 +6,6 @@ import Navigation exposing (Location)
 type Msg
     = ChangeLocation String
     | OnLocationChange Location
+    | UpdateName String
+    | UpdateMailingListId String
+    | UpdateRequireEntryName Bool
