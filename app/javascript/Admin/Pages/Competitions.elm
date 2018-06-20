@@ -1,12 +1,14 @@
 module Admin.Pages.Competitions exposing (..)
 
 import Html exposing (Html, table, thead, tr, th, text, tbody, td, a)
-import Html.Attributes exposing (classList)
+import Html.Attributes exposing (classList, href)
 import Admin.Competition exposing (Competition)
+import Admin.Messages exposing (..)
+import Admin.Routing exposing (Route(..), competitionPath, onLinkClick)
 import Date.Format exposing (format)
 
 
-view : List Competition -> Html msg
+view : List Competition -> Html Msg
 view competitions =
     table
         [ classList
@@ -27,11 +29,11 @@ view competitions =
         ]
 
 
-competitionRow : Competition -> Html msg
+competitionRow : Competition -> Html Msg
 competitionRow c =
     tr []
         [ td []
-            [ a [] [ text c.name ]
+            [ a [ href (competitionPath c.id), onLinkClick (ChangeLocation (competitionPath c.id)) ] [ text c.name ]
             ]
         , td [] [ text (toString c.entryCount) ]
         , td [] [ text (format "%B %e, %Y" c.createdOn) ]
