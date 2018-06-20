@@ -59,15 +59,21 @@ selectField nameValue data msg =
 
 showErrors : Errors -> Html msg
 showErrors errors =
-    case Dict.get "record" errors of
-        Just a ->
+    case Dict.isEmpty errors of
+        False ->
             article [ class "message is-danger" ]
                 [ div [ class "message-body" ]
-                    [ ul [] (List.map (formatError "record") a) ]
+                    [--[ ul [] (Dict.map formatErrors errors) ]
+                    ]
                 ]
 
-        Nothing ->
+        True ->
             text ""
+
+
+formatErrors : ( String, List String ) -> List (Html Msg)
+formatErrors ( key, vals ) =
+    List.map (formatError key) vals
 
 
 formatError : String -> String -> Html msg

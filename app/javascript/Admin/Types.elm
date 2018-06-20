@@ -14,6 +14,12 @@ type alias Competition =
     }
 
 
+type alias Response =
+    { competition : Maybe Competition
+    , errors : Errors
+    }
+
+
 type alias Errors =
     Dict String (List String)
 

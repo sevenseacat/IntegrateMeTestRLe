@@ -6,7 +6,7 @@ import Admin.Pages.Competitions
 import Admin.Pages.Competition
 import Admin.Pages.NotFound
 import Admin.Request exposing (competitionSaveRequest)
-import Admin.Routing as Routing exposing (Route(..), competitionPath)
+import Admin.Routing as Routing exposing (Route(..), competitionsPath, competitionPath)
 import Admin.Types exposing (Competition, MailingList, Errors)
 import Dict exposing (Dict)
 import Html exposing (Html)
@@ -128,10 +128,35 @@ update msg model =
                     ( model, Cmd.none )
 
         CompetitionSaved (Err _) ->
-            ( { model | errors = Dict.fromList [ ( "record", [ "could not be saved" ] ) ] }, Cmd.none )
+            ( { model | errors = Dict.fromList [ ( "Record", [ "could not be saved" ] ) ] }, Cmd.none )
 
-        CompetitionSaved _ ->
-            ( model, Cmd.none )
+        CompetitionSaved (Ok response) ->
+            case response.competition of
+                Just comp ->
+                    -- Save was successful
+                    let
+                        competitionList =
+                            updateCompetitionList model.competitions comp
+                    in
+                        ( { model | competitions = competitionList, errors = Dict.empty }
+                        , Navigation.newUrl competitionsPath
+                        )
+
+                Nothing ->
+                    -- There were errors ohnoes
+                    ( { model | errors = response.errors }, Cmd.none )
+
+
+updateCompetitionList : List Competition -> Competition -> List Competition
+updateCompetitionList list newCompetition =
+    let
+        updateSingle competition =
+            if competition.id == newCompetition.id then
+                newCompetition
+            else
+                competition
+    in
+        List.map updateSingle list
 
 
 submitCompetitionData : String -> Competition -> Cmd Msg
@@ -142,8 +167,7 @@ submitCompetitionData token competition =
                 |> DataLoader.encodeCompetition
                 |> Http.jsonBody
     in
-        competitionSaveRequest token (competitionPath competition.id) body
-            |> Http.send CompetitionSaved
+        Http.send CompetitionSaved (competitionSaveRequest token (competitionPath competition.id) body)
 
 
 loadCurrentCompetition : List Competition -> Route -> Maybe Competition

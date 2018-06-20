@@ -1,15 +1,10 @@
-module Admin.DataLoader exposing (loadCompetitions, loadMailingLists, encodeCompetition, decodeCompetitionResponse)
+module Admin.DataLoader exposing (loadCompetitions, loadMailingLists, encodeCompetition, responseDecoder)
 
-import Admin.Types exposing (Competition, MailingList)
-import Json.Decode exposing (Decoder, field, decodeString, bool, int, list, string, nullable)
+import Admin.Types exposing (Competition, MailingList, Response, Errors)
+import Json.Decode exposing (Decoder, field, decodeString, bool, int, list, string, nullable, dict)
 import Json.Decode.Pipeline exposing (decode, hardcoded, required)
 import Json.Decode.Extra exposing (date)
 import Json.Encode as Encode
-
-
-decodeCompetitionResponse : Decoder String
-decodeCompetitionResponse =
-    field "response" string
 
 
 encodeCompetition : Competition -> Encode.Value
@@ -18,8 +13,8 @@ encodeCompetition c =
         [ ( "competition"
           , Encode.object
                 [ ( "name", Encode.string c.name )
-                , ( "requiresEntryName", Encode.bool c.requiresEntryName )
-                , ( "mailingListId"
+                , ( "requires_entry_name", Encode.bool c.requiresEntryName )
+                , ( "mailing_list_id"
                   , case c.mailingListId of
                         Just v ->
                             Encode.string v
@@ -58,3 +53,10 @@ mailingListDecoder =
     decode MailingList
         |> required "id" string
         |> required "name" string
+
+
+responseDecoder : Decoder Response
+responseDecoder =
+    decode Response
+        |> required "competition" (nullable competitionDecoder)
+        |> required "errors" (dict (list string))
