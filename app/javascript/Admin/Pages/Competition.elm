@@ -44,21 +44,21 @@ checkboxField nameValue checkedValue labelValue msg =
         ]
 
 
-selectField : String -> Maybe String -> List { a | id : String, name : String } -> (String -> Msg) -> Html Msg
+selectField : String -> Maybe String -> List MailingList -> (String -> Msg) -> Html Msg
 selectField nameValue selectedValue data msg =
     div [ class "field-body" ]
         [ div [ class "field is-narrow" ]
             [ div [ class "control" ]
                 [ div [ class "select is-fullwidth" ]
                     [ select [ name nameValue, onInput msg ]
-                        (List.map (optionField selectedValue) data)
+                        (List.map (optionField selectedValue) ((MailingList "" "") :: data))
                     ]
                 ]
             ]
         ]
 
 
-optionField : Maybe String -> { a | id : String, name : String } -> Html msg
+optionField : Maybe String -> MailingList -> Html msg
 optionField selectedValue record =
     let
         isSelected =
