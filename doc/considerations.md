@@ -23,3 +23,5 @@ Either way, the ID of that mailing list will be stored with the Competition reco
 * In a real app, there would be authentication locking access to the admin namespace. Typically I would do this by placing a `before_action` method in the `Admin::ApplicationController` that applies to every action, and checks for an authenticated user.
 
 * I've integrated Webpacker into the app for Elm support, and also ensured that the existing Angular code continues to work. This integration is really only relevant to this sample app so I can show my Elm skills - it may be suboptimal, but it works!
+
+* I haven't included the ability for admins to specify their own Mailchimp API key - this would likely be done on a per-account basis in a multi-tenanted app, not on a per-competition basis, and as such is out of the scope of this task.
