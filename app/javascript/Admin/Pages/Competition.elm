@@ -57,23 +57,22 @@ selectField nameValue data msg =
         ]
 
 
-showErrors : Errors -> Html msg
+showErrors : Errors -> Html Msg
 showErrors errors =
     case Dict.isEmpty errors of
         False ->
             article [ class "message is-danger" ]
                 [ div [ class "message-body" ]
-                    [--[ ul [] (Dict.map formatErrors errors) ]
-                    ]
+                    [ ul [] (Dict.foldr formatErrors [] errors) ]
                 ]
 
         True ->
             text ""
 
 
-formatErrors : ( String, List String ) -> List (Html Msg)
-formatErrors ( key, vals ) =
-    List.map (formatError key) vals
+formatErrors : String -> List String -> List (Html Msg) -> List (Html Msg)
+formatErrors key vals acc =
+    List.map (formatError key) vals ++ acc
 
 
 formatError : String -> String -> Html msg
