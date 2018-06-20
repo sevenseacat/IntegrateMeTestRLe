@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var mountNode = document.getElementById('competitions');
   if(mountNode) {
     var competitionData = mountNode.getAttribute("data-competitions");
-    var app = Elm.Admin.Main.embed(mountNode, {competitions: competitionData});
+    var listData = mountNode.getAttribute("data-mailing-lists");
+    var app = Elm.Admin.Main.embed(mountNode, {competitions: competitionData, mailingLists: listData});
   }
 })

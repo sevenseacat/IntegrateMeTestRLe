@@ -1,42 +1,52 @@
 module Admin.Main exposing (main)
 
-import Admin.Competition exposing (Competition)
-import Admin.CompetitionLoader as CompetitionLoader
+import Admin.DataLoader as DataLoader
 import Admin.Messages exposing (..)
 import Admin.Pages.Competitions
 import Admin.Pages.Competition
 import Admin.Pages.NotFound
 import Admin.Routing as Routing exposing (Route(..))
+import Admin.Types exposing (Competition, MailingList)
 import Html exposing (Html)
 import Navigation exposing (Location)
 
 
 type alias Flags =
     { competitions : String
+    , mailingLists : String
     }
 
 
 type alias Model =
     { competitions : List Competition
+    , mailingLists : List MailingList
     , route : Route
     }
 
 
 init : Flags -> Location -> ( Model, Cmd Msg )
-init { competitions } location =
+init { competitions, mailingLists } location =
     let
         currentRoute =
             Routing.parseLocation location
 
         comps =
-            case CompetitionLoader.loadCompetitions competitions of
+            case DataLoader.loadCompetitions competitions of
+                Ok data ->
+                    data
+
+                Err _ ->
+                    []
+
+        lists =
+            case DataLoader.loadMailingLists mailingLists of
                 Ok data ->
                     data
 
                 Err _ ->
                     []
     in
-        ( { competitions = comps, route = currentRoute }, Cmd.none )
+        ( { competitions = comps, mailingLists = lists, route = currentRoute }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -62,7 +72,7 @@ view model =
         CompetitionRoute id ->
             case List.head (List.filter (\c -> c.id == id) model.competitions) of
                 Just c ->
-                    Admin.Pages.Competition.view c
+                    Admin.Pages.Competition.view c model.mailingLists
 
                 Nothing ->
                     Admin.Pages.NotFound.view

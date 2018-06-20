@@ -1,4 +1,4 @@
-module Admin.Competition exposing (..)
+module Admin.Types exposing (..)
 
 import Date exposing (Date)
 
@@ -10,4 +10,10 @@ type alias Competition =
     , mailingListId : Maybe String
     , entryCount : Int
     , createdOn : Date
+    }
+
+
+type alias MailingList =
+    { id : String
+    , name : String
     }

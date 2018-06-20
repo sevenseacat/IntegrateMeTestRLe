@@ -1,6 +1,8 @@
 module Admin.Routing exposing (..)
 
+import Admin.Messages exposing (Msg(..))
 import Html exposing (Attribute)
+import Html.Attributes exposing (href)
 import Html.Events exposing (onWithOptions)
 import Json.Decode as Decode
 import Navigation exposing (Location)
@@ -39,6 +41,11 @@ parseLocation location =
 
         Nothing ->
             NotFoundRoute
+
+
+linkTo : String -> List (Attribute Msg)
+linkTo url =
+    [ href url, onLinkClick (ChangeLocation url) ]
 
 
 nor : Bool -> Bool -> Bool

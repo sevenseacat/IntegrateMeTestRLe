@@ -1,8 +1,9 @@
-module Admin.Pages.Competition exposing (..)
+module Admin.Pages.Competition exposing (view)
 
-import Admin.Competition exposing (Competition)
 import Admin.Messages exposing (Msg(..))
-import Html exposing (Html, div, text, label, input, button)
+import Admin.Routing exposing (linkTo, competitionsPath)
+import Admin.Types exposing (Competition, MailingList)
+import Html exposing (Html, div, text, label, input, button, select, option)
 import Html.Attributes exposing (type_, value, class, for, name, checked)
 
 
@@ -41,22 +42,45 @@ checkboxField nameValue checkedValue labelValue =
         ]
 
 
-view : Competition -> Html Msg
-view competition =
+selectField : String -> List { a | id : String, name : String } -> Html msg
+selectField nameValue data =
+    div [ class "field-body" ]
+        [ div [ class "field is-narrow" ]
+            [ div [ class "control" ]
+                [ div [ class "select is-fullwidth" ]
+                    [ select [ name nameValue ] (List.map optionField data)
+                    ]
+                ]
+            ]
+        ]
+
+
+optionField : { a | id : String, name : String } -> Html msg
+optionField record =
+    option [ value record.id ] [ text record.name ]
+
+
+view : Competition -> List MailingList -> Html Msg
+view competition mailingLists =
     div []
         [ div [ class "field is-horizontal" ]
             [ labelField "name" "Name"
             , textField "name" competition.name
             ]
         , div [ class "field is-horizontal" ]
+            [ labelField "mailing_list_id" "Mailing List"
+            , selectField "mailing_list_id" mailingLists
+            ]
+        , div [ class "field is-horizontal" ]
             [ div [ class "field-label" ] []
             , checkboxField "requires_entry_name" competition.requiresEntryName "This competition requires an entry name"
             ]
-        , div [ class "field is-horizontal" ]
+        , div [ class "field is-horizontal is-grouped" ]
             [ div [ class "field-label" ] []
             , div [ class "field-body" ]
                 [ div [ class "control" ]
                     [ button [ class "button is-primary" ] [ text "Save" ]
+                    , button ([ class "button is-text" ] ++ (linkTo competitionsPath)) [ text "Back" ]
                     ]
                 ]
             ]
