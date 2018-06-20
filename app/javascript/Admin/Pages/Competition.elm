@@ -5,7 +5,7 @@ import Admin.Routing exposing (linkTo, competitionsPath)
 import Admin.Types exposing (Competition, MailingList, Errors)
 import Dict exposing (Dict)
 import Html exposing (Html, form, div, text, label, input, button, select, option, article, ul, li)
-import Html.Attributes exposing (type_, value, class, for, name, checked)
+import Html.Attributes exposing (type_, value, class, for, name, checked, selected)
 import Html.Events exposing (onInput, onCheck, onSubmit, onClick)
 
 
@@ -44,17 +44,32 @@ checkboxField nameValue checkedValue labelValue msg =
         ]
 
 
-selectField : String -> List { a | id : String, name : String } -> (String -> Msg) -> Html Msg
-selectField nameValue data msg =
+selectField : String -> Maybe String -> List { a | id : String, name : String } -> (String -> Msg) -> Html Msg
+selectField nameValue selectedValue data msg =
     div [ class "field-body" ]
         [ div [ class "field is-narrow" ]
             [ div [ class "control" ]
                 [ div [ class "select is-fullwidth" ]
-                    [ select [ name nameValue, onInput msg ] (List.map optionField data)
+                    [ select [ name nameValue, onInput msg ]
+                        (List.map (optionField selectedValue) data)
                     ]
                 ]
             ]
         ]
+
+
+optionField : Maybe String -> { a | id : String, name : String } -> Html msg
+optionField selectedValue record =
+    let
+        isSelected =
+            case selectedValue of
+                Just val ->
+                    val == record.id
+
+                Nothing ->
+                    False
+    in
+        option [ value record.id, selected isSelected ] [ text record.name ]
 
 
 showErrors : Errors -> Html Msg
@@ -81,11 +96,6 @@ formatError key val =
         [ text (key ++ " " ++ val) ]
 
 
-optionField : { a | id : String, name : String } -> Html msg
-optionField record =
-    option [ value record.id ] [ text record.name ]
-
-
 view : Competition -> Errors -> List MailingList -> Html Msg
 view competition errors mailingLists =
     form [ onSubmit SaveCompetition ]
@@ -96,7 +106,7 @@ view competition errors mailingLists =
             ]
         , div [ class "field is-horizontal" ]
             [ labelField "mailing_list_id" "Mailing List"
-            , selectField "mailing_list_id" mailingLists UpdateMailingListId
+            , selectField "mailing_list_id" competition.mailingListId mailingLists UpdateMailingListId
             ]
         , div [ class "field is-horizontal" ]
             [ div [ class "field-label" ] []
