@@ -3,6 +3,7 @@
 $family-sans-serif: "Lato", sans-serif;
 $text-light: #a5afb8;
 $turquoise: #4edd9e;
+$turquoise-invert: #fff;
 $menu-item-active-background-color: $turquoise;
 $link: $text-light;
 $table-cell-padding: 1em;
@@ -23,7 +24,7 @@ h1 {
   font-size: 38px;
   line-height: 1.33;
   letter-spacing: .7px;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
 }
 
 p.placeholder {
@@ -59,4 +60,8 @@ main#content {
   background-color: white;
   padding: 20px;
   box-shadow: 0 2px 4px 0 hsla(0, 0%, 0%, 0.1);
+}
+
+label.checkbox input {
+  margin-right: 10px;
 }
