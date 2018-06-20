@@ -28,6 +28,7 @@ type alias Model =
     , currentCompetition : Maybe Competition
     , errors : Errors
     , csrfToken : String
+    , flash : Maybe String
     }
 
 
@@ -62,6 +63,7 @@ init { competitions, mailingLists, csrfToken } location =
           , currentCompetition = currentCompetition
           , errors = Dict.empty
           , csrfToken = csrfToken
+          , flash = Nothing
           }
         , Cmd.none
         )
@@ -71,7 +73,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangeLocation path ->
-            ( model, Navigation.newUrl path )
+            ( { model | flash = Nothing }, Navigation.newUrl path )
 
         OnLocationChange location ->
             let
@@ -138,7 +140,11 @@ update msg model =
                         competitionList =
                             updateCompetitionList model.competitions comp
                     in
-                        ( { model | competitions = competitionList, errors = Dict.empty }
+                        ( { model
+                            | competitions = competitionList
+                            , errors = Dict.empty
+                            , flash = Just "Competition saved successfully"
+                          }
                         , Navigation.newUrl competitionsPath
                         )
 
@@ -189,7 +195,7 @@ view : Model -> Html Msg
 view model =
     case model.route of
         CompetitionsRoute ->
-            Admin.Pages.Competitions.view model.competitions
+            Admin.Pages.Competitions.view model.competitions model.flash
 
         CompetitionRoute id ->
             case model.currentCompetition of
