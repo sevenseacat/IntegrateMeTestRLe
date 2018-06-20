@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   namespace :admin do
     root 'dashboard#show'
 
-    resources :competitions, only: [:index, :edit]
+    get 'competitions' => 'competitions#app'
+    get 'competitions/:anything' => 'competitions#app'
   end
 
   # Example of regular route:
