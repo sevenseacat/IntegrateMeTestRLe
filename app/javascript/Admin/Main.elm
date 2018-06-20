@@ -5,9 +5,11 @@ import Admin.Messages exposing (..)
 import Admin.Pages.Competitions
 import Admin.Pages.Competition
 import Admin.Pages.NotFound
-import Admin.Routing as Routing exposing (Route(..))
-import Admin.Types exposing (Competition, MailingList)
+import Admin.Routing as Routing exposing (Route(..), competitionPath)
+import Admin.Types exposing (Competition, MailingList, Errors)
+import Dict exposing (Dict)
 import Html exposing (Html)
+import Http
 import Navigation exposing (Location)
 
 
@@ -22,6 +24,7 @@ type alias Model =
     , mailingLists : List MailingList
     , route : Route
     , currentCompetition : Maybe Competition
+    , errors : Errors
     }
 
 
@@ -54,6 +57,7 @@ init { competitions, mailingLists } location =
           , mailingLists = lists
           , route = currentRoute
           , currentCompetition = currentCompetition
+          , errors = Dict.empty
           }
         , Cmd.none
         )
@@ -73,7 +77,7 @@ update msg model =
                 currentCompetition =
                     loadCurrentCompetition model.competitions newRoute
             in
-                ( { model | route = newRoute, currentCompetition = currentCompetition }, Cmd.none )
+                ( { model | route = newRoute, currentCompetition = currentCompetition, errors = Dict.empty }, Cmd.none )
 
         UpdateName name ->
             let
@@ -111,6 +115,32 @@ update msg model =
             in
                 ( { model | currentCompetition = newCompetition }, Cmd.none )
 
+        SaveCompetition ->
+            case model.currentCompetition of
+                Just c ->
+                    ( model, submitCompetitionData c )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        CompetitionSaved (Err _) ->
+            ( { model | errors = Dict.fromList [ ( "record", [ "could not be saved" ] ) ] }, Cmd.none )
+
+        CompetitionSaved _ ->
+            ( model, Cmd.none )
+
+
+submitCompetitionData : Competition -> Cmd Msg
+submitCompetitionData competition =
+    let
+        body =
+            competition
+                |> DataLoader.encodeCompetition
+                |> Http.jsonBody
+    in
+        Http.post (competitionPath competition.id) body DataLoader.decodeCompetitionResponse
+            |> Http.send CompetitionSaved
+
 
 loadCurrentCompetition : List Competition -> Route -> Maybe Competition
 loadCurrentCompetition competitions route =
@@ -136,7 +166,7 @@ view model =
         CompetitionRoute id ->
             case model.currentCompetition of
                 Just c ->
-                    Admin.Pages.Competition.view c model.mailingLists
+                    Admin.Pages.Competition.view c model.errors model.mailingLists
 
                 Nothing ->
                     Admin.Pages.NotFound.view

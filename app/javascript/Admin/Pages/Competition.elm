@@ -2,10 +2,11 @@ module Admin.Pages.Competition exposing (view)
 
 import Admin.Messages exposing (Msg(..))
 import Admin.Routing exposing (linkTo, competitionsPath)
-import Admin.Types exposing (Competition, MailingList)
-import Html exposing (Html, div, text, label, input, button, select, option)
+import Admin.Types exposing (Competition, MailingList, Errors)
+import Dict exposing (Dict)
+import Html exposing (Html, form, div, text, label, input, button, select, option, article, ul, li)
 import Html.Attributes exposing (type_, value, class, for, name, checked)
-import Html.Events exposing (onInput, onCheck)
+import Html.Events exposing (onInput, onCheck, onSubmit, onClick)
 
 
 labelField : String -> String -> Html msg
@@ -56,15 +57,35 @@ selectField nameValue data msg =
         ]
 
 
+showErrors : Errors -> Html msg
+showErrors errors =
+    case Dict.get "record" errors of
+        Just a ->
+            article [ class "message is-danger" ]
+                [ div [ class "message-body" ]
+                    [ ul [] (List.map (formatError "record") a) ]
+                ]
+
+        Nothing ->
+            text ""
+
+
+formatError : String -> String -> Html msg
+formatError key val =
+    li []
+        [ text (key ++ " " ++ val) ]
+
+
 optionField : { a | id : String, name : String } -> Html msg
 optionField record =
     option [ value record.id ] [ text record.name ]
 
 
-view : Competition -> List MailingList -> Html Msg
-view competition mailingLists =
-    div []
-        [ div [ class "field is-horizontal" ]
+view : Competition -> Errors -> List MailingList -> Html Msg
+view competition errors mailingLists =
+    form [ onSubmit SaveCompetition ]
+        [ showErrors errors
+        , div [ class "field is-horizontal" ]
             [ labelField "name" "Name"
             , textField "name" competition.name UpdateName
             ]

@@ -1,6 +1,7 @@
 module Admin.Types exposing (..)
 
 import Date exposing (Date)
+import Dict exposing (Dict)
 
 
 type alias Competition =
@@ -11,6 +12,10 @@ type alias Competition =
     , entryCount : Int
     , createdOn : Date
     }
+
+
+type alias Errors =
+    Dict String (List String)
 
 
 type alias MailingList =
