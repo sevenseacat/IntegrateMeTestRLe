@@ -1,6 +1,19 @@
 require "rails_helper"
 
 RSpec.describe MailingList do
+  describe ".all" do
+    it "retrieves a list of all mailing lists in the account" do
+      stub_request(:get, "https://us18.api.mailchimp.com/3.0/lists")
+        .to_return(status: 200, body: File.read(Rails.root.join("spec/support/mailing_lists.json")))
+
+      all_lists = MailingList.all
+      expect(all_lists.all? { |l| l.is_a? MailingList }).to eq true
+      expect(all_lists.map { |l| [l.id, l.name] }).to eq([
+        ["4827de065a", "Email only comp"], ["a94641097a", "Name and email comp"]
+      ])
+    end
+  end
+
   describe "#add_subscriber" do
     context "when the Mailchimp API responds successfully" do
       before :each do

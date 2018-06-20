@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "angular": "1.4.8",
+    "@rails/webpacker": "3.5",
+    "coffee-loader": "^0.9.0",
+    "coffeescript": "1.12.7",
+    "core-js": "^2.5.7",
+    "elm": "^0.18.0",
+    "elm-webpack-loader": "^4.5.0",
+    "rxjs": "^6.2.1",
+    "ts-loader": "3.5.0",
+    "typescript": "^2.9.2",
+    "zone.js": "^0.8.26"
+  },
+  "devDependencies": {
+    "elm-hot-loader": "^0.5.4",
+    "webpack-dev-server": "2.11.2"
+  }
+}

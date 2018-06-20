@@ -3,6 +3,14 @@ require "digest"
 class MailingList
   class APIError < ::StandardError; end
 
+  attr_reader :id, :name
+  
+  def self.all
+    Gibbon::Request.lists.retrieve.body["lists"].map do |l|
+      new(l["id"], l["name"])
+    end
+  end
+
   def self.find(id)
     new(id)
   end
@@ -19,8 +27,9 @@ class MailingList
 
   private
 
-  def initialize(id)
+  def initialize(id, name=nil)
     @id = id
+    @name = name
   end
 
   # The request object should be reinstantiated for each API call.

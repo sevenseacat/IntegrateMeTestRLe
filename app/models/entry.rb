@@ -1,7 +1,7 @@
 class Entry < ActiveRecord::Base
   EMAIL_REGEX = /\A[A-Z0-9._%a-z\-+]+@(?:[A-Z0-9a-z\-]+\.)+[A-Za-z]{2,12}\z/
 
-  belongs_to :competition
+  belongs_to :competition, counter_cache: true
 
   before_validation :clean_email
 
